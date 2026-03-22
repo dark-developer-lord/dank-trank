@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { basename } from 'node:path';
-import type { GeneratorContext, GeneratedFile, GenerateOptions } from './types.js';
+import type { GeneratorContext, GeneratedFile, GenerateOptions, Generator } from './types.js';
 import {
   dockerfileGenerator,
   dockerComposeGenerator,
@@ -10,9 +10,24 @@ import {
   envExampleGenerator,
   entrypointGenerator,
 } from './dockerfile.js';
+import {
+  certbotScriptGenerator,
+  certbotNginxGenerator,
+  caddyfileGenerator,
+} from './ssl.js';
+import {
+  k8sNamespaceGenerator,
+  k8sConfigMapGenerator,
+  k8sSecretTemplateGenerator,
+  k8sDeploymentGenerator,
+  k8sServiceGenerator,
+  k8sIngressGenerator,
+  k8sHpaGenerator,
+} from './kubernetes.js';
+import { monorepoRootComposeGenerator } from './monorepo.js';
 import { safeWriteFile, type WriteResult } from '../utils/fs.js';
 
-const allGenerators = [
+const baseGenerators: Generator[] = [
   dockerfileGenerator,
   dockerComposeGenerator,
   nginxGenerator,
@@ -20,6 +35,20 @@ const allGenerators = [
   dockerignoreGenerator,
   envExampleGenerator,
   entrypointGenerator,
+  // SSL generators (only active when ctx.sslProvider is set)
+  certbotScriptGenerator,
+  certbotNginxGenerator,
+  caddyfileGenerator,
+  // k8s generators (only active when ctx.k8s is set)
+  k8sNamespaceGenerator,
+  k8sConfigMapGenerator,
+  k8sSecretTemplateGenerator,
+  k8sDeploymentGenerator,
+  k8sServiceGenerator,
+  k8sIngressGenerator,
+  k8sHpaGenerator,
+  // monorepo (only active when ctx.monorepo is set)
+  monorepoRootComposeGenerator,
 ];
 
 function getDefaultPort(stack: string): number {
@@ -40,7 +69,8 @@ export function buildContext(rootDir: string, stack: import('../detector/types.j
   };
 }
 
-export async function generateAll(ctx: GeneratorContext): Promise<GeneratedFile[]> {
+export async function generateAll(ctx: GeneratorContext, extraGenerators: Generator[] = []): Promise<GeneratedFile[]> {
+  const allGenerators = [...baseGenerators, ...extraGenerators];
   const results = await Promise.all(allGenerators.map((g) => g.generate(ctx)));
   return results.filter((f): f is GeneratedFile => f !== null);
 }

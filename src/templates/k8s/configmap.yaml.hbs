@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{projectName}}-config
+  namespace: {{namespace}}
+  labels:
+    app.kubernetes.io/name: {{projectName}}
+    app.kubernetes.io/managed-by: dank-trank
+data:
+  PORT: "{{port}}"
+  APP_ENV: "production"
+  # Add non-sensitive config here

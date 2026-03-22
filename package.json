@@ -1,6 +1,6 @@
 {
   "name": "@adas/dank-trank",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "From idea to live app in 1 command. Auto-detect your stack, generate production-ready Docker, Nginx, and CI/CD.",
   "type": "module",
   "bin": {

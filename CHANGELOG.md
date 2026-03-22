@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.0] - 2025-07-06
+
+### Added
+- **Deploy wizard** (`dt deploy`): interactive wizard to generate and optionally run cloud deployments
+  - DigitalOcean App Platform (`.do/app.yaml` + `doctl` integration)
+  - Vercel (`vercel.json` + `vercel deploy` integration)
+  - AWS App Runner (`apprunner.yaml` + guided ECR/CLI steps)
+- **SSL/TLS command** (`dt ssl`): generate SSL configuration files
+  - Certbot: `setup-ssl.sh` + `nginx-ssl.conf` with HSTS and auto-renewal cron
+  - Caddy: `Caddyfile` with automatic HTTPS
+- **Kubernetes manifests** (`dt kube`): generate production-ready k8s manifests
+  - Namespace, ConfigMap, Secret template, Deployment, Service, Ingress, HPA
+  - `--k8s` flag added to `dt generate` for inline generation
+- **Monorepo support**: auto-detect pnpm / npm / lerna workspaces
+  - `dt inspect` and `dt generate` display per-package stack detection
+  - Root `docker-compose.yml` generated for monorepos with multiple services
+- **Plugin system**: extend dank-trank with custom detectors and generators
+  - Load plugins from `dank-trank.config.js` in project root
+  - Auto-discover `dank-trank-plugin-*` and `@dank-trank/plugin-*` npm packages
+  - Example plugin in `examples/plugin-example/`
+- Recursive template copy in tsup build (all new template directories copied to dist)
+- 30+ new tests covering all new features
+
 ## [2.0.0] - 2025-07-05
 
 ### Breaking

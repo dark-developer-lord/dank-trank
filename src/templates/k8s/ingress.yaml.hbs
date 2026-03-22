@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{projectName}}
+  namespace: {{namespace}}
+  labels:
+    app.kubernetes.io/name: {{projectName}}
+    app.kubernetes.io/managed-by: dank-trank
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "20m"
+    {{#if hasDomain}}
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    {{/if}}
+spec:
+  ingressClassName: nginx
+  {{#if hasDomain}}
+  tls:
+    - hosts:
+        - {{domain}}
+      secretName: {{projectName}}-tls
+  {{/if}}
+  rules:
+    - {{#if hasDomain}}host: {{domain}}{{/if}}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{projectName}}
+                port:
+                  number: 80

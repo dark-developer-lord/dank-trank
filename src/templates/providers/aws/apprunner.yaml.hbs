@@ -1,0 +1,21 @@
+version: 1.0
+runtime: DOCKER
+build:
+  commands:
+    pre-build:
+      - echo "Building {{projectName}}"
+run:
+  runtime-version: latest
+  network:
+    port: {{port}}
+    env:
+      - name: PORT
+        value: "{{port}}"
+  env:
+    - name: APP_ENV
+      value: production
+    # ── Secrets: set via AWS Secrets Manager or SSM Parameter Store ──
+    # - name: DATABASE_URL
+    #   value-from:
+    #     secrets-manager: "{{projectName}}/prod/DATABASE_URL"
+  auto-deployments-enabled: true

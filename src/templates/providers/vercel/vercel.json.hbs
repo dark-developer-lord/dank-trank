@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "name": "{{projectName}}",
+  "builds": [
+    {
+      "src": "**",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

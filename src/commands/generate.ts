@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import { createRequire } from 'node:module';
 import { detectProject } from '../detector/index.js';
 import { buildContext, generateAll, writeGeneratedFiles } from '../generators/index.js';
+import { resolveAllPlugins } from '../config/plugin.js';
 import { log } from '../utils/logger.js';
 import { withSpinner } from '../utils/spinner.js';
 import type { WriteResult } from '../utils/fs.js';
@@ -15,6 +16,7 @@ interface GenerateCommandOptions {
   dryRun?: boolean;
   force?: boolean;
   outputDir?: string;
+  k8s?: boolean;
 }
 
 function printResults(results: WriteResult[], dryRun: boolean): void {
@@ -78,7 +80,14 @@ export async function generateCommand(options: GenerateCommandOptions): Promise<
 
   log.banner();
 
-  const project = await withSpinner('Detecting project stack', () => detectProject(rootDir));
+  // Load plugins before detection so extra detectors/generators are available
+  const { detectors: extraDetectors, generators: extraGenerators } = await resolveAllPlugins(rootDir);
+
+  if (extraDetectors.length + extraGenerators.length > 0) {
+    log.dim(`Plugins loaded: ${extraDetectors.length} detector(s), ${extraGenerators.length} generator(s)`);
+  }
+
+  const project = await withSpinner('Detecting project stack', () => detectProject(rootDir, extraDetectors));
 
   if (!project.primary) {
     log.error('Could not detect a known stack in this project.');
@@ -92,6 +101,16 @@ export async function generateCommand(options: GenerateCommandOptions): Promise<
   const primary = project.primary;
   log.success(`Detected: ${chalk.bold(primary.stack.toUpperCase())} (confidence: ${primary.confidence}%)`);
 
+  // Show monorepo info if detected
+  if (project.monorepo) {
+    const { monorepo } = project;
+    log.info(`Monorepo: ${chalk.bold(monorepo.type.toUpperCase())} with ${monorepo.packages.length} packages`);
+    for (const pkg of monorepo.packages) {
+      const stackLabel = pkg.stack ? chalk.dim(` (${pkg.stack.stack})`) : '';
+      log.dim(`  • ${pkg.name} @ ${pkg.path}${stackLabel}`);
+    }
+  }
+
   if (options.dryRun) {
     log.info(chalk.cyan('Dry run mode — no files will be written.'));
   }
@@ -99,7 +118,16 @@ export async function generateCommand(options: GenerateCommandOptions): Promise<
   log.break();
 
   const ctx = buildContext(rootDir, primary);
-  const files = await withSpinner('Generating infrastructure files', () => generateAll(ctx));
+
+  // Merge optional flags into context
+  if (options.k8s) {
+    (ctx as Record<string, unknown>).k8s = true;
+  }
+  if (project.monorepo) {
+    (ctx as Record<string, unknown>).monorepo = project.monorepo;
+  }
+
+  const files = await withSpinner('Generating infrastructure files', () => generateAll(ctx, extraGenerators));
 
   log.break();
   log.header(`Files ${options.dryRun ? '(preview)' : ''}`);

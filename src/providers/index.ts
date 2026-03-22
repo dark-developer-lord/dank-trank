@@ -1,18 +1,13 @@
+import { digitaloceanProvider } from './digitalocean.js';
+import { vercelProvider } from './vercel.js';
+import { awsProvider } from './aws.js';
 import type { DeployProvider } from './types.js';
 
-const createStubProvider = (name: string, slug: string): DeployProvider => ({
-  name,
-  slug,
-  async deploy() {
-    throw new Error(`${name} deployment is coming soon. Follow the roadmap for updates.`);
-  },
-});
+export { digitaloceanProvider as digitalocean } from './digitalocean.js';
+export { vercelProvider as vercel } from './vercel.js';
+export { awsProvider as aws } from './aws.js';
 
-export const digitalocean = createStubProvider('DigitalOcean', 'digitalocean');
-export const vercel = createStubProvider('Vercel', 'vercel');
-export const aws = createStubProvider('AWS', 'aws');
-
-export const providers: DeployProvider[] = [digitalocean, vercel, aws];
+export const providers: DeployProvider[] = [digitaloceanProvider, vercelProvider, awsProvider];
 
 export function getProvider(slug: string): DeployProvider | undefined {
   return providers.find((p) => p.slug === slug);

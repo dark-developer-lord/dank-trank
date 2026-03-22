@@ -1,17 +1,22 @@
 import { defineConfig } from 'tsup';
-import { copyFileSync, mkdirSync, readdirSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
-function copyTemplates() {
-  const stacks = ['django', 'fastapi', 'node'];
-  for (const stack of stacks) {
-    const srcDir = join('src', 'templates', stack);
-    const destDir = join('dist', 'templates', stack);
-    mkdirSync(destDir, { recursive: true });
-    for (const file of readdirSync(srcDir)) {
-      copyFileSync(join(srcDir, file), join(destDir, file));
+function copyDirRecursive(srcDir: string, destDir: string): void {
+  mkdirSync(destDir, { recursive: true });
+  for (const entry of readdirSync(srcDir)) {
+    const srcPath = join(srcDir, entry);
+    const destPath = join(destDir, entry);
+    if (statSync(srcPath).isDirectory()) {
+      copyDirRecursive(srcPath, destPath);
+    } else {
+      copyFileSync(srcPath, destPath);
     }
   }
+}
+
+function copyTemplates() {
+  copyDirRecursive(join('src', 'templates'), join('dist', 'templates'));
 }
 
 export default defineConfig({

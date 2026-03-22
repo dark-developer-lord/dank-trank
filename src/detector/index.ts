@@ -3,12 +3,15 @@ import { djangoDetector } from './django.js';
 import { fastapiDetector } from './fastapi.js';
 import { nodeDetector } from './node.js';
 import { detectDatabases } from './database.js';
+import { detectMonorepo } from './monorepo.js';
 
-const detectors: Detector[] = [djangoDetector, fastapiDetector, nodeDetector];
+const baseDetectors: Detector[] = [djangoDetector, fastapiDetector, nodeDetector];
 
-export async function detectProject(rootDir: string): Promise<ProjectInfo> {
+export async function detectProject(rootDir: string, extraDetectors: Detector[] = []): Promise<ProjectInfo> {
+  const allDetectors = [...baseDetectors, ...extraDetectors];
+
   const results = await Promise.all(
-    detectors.map((d) => d.detect(rootDir)),
+    allDetectors.map((d) => d.detect(rootDir)),
   );
 
   const detections = results.filter((r) => r !== null);
@@ -23,11 +26,34 @@ export async function detectProject(rootDir: string): Promise<ProjectInfo> {
     }),
   );
 
+  // Detect monorepo
+  const monorepo = await detectMonorepo(rootDir);
+  if (monorepo) {
+    // Run stack detection on each workspace package
+    await Promise.all(
+      monorepo.packages.map(async (pkg) => {
+        const { join } = await import('node:path');
+        const pkgResult = await detectProject(join(rootDir, pkg.path), extraDetectors);
+        pkg.stack = pkgResult.primary ?? undefined;
+      }),
+    );
+  }
+
   return {
     rootDir,
     detections,
     primary: detections.length > 0 ? detections[0] : null,
+    ...(monorepo ? { monorepo } : {}),
   };
 }
 
-export { type ProjectInfo, type DetectionResult, type StackType, type NodeSubType, type DatabaseInfo, type DatabaseType } from './types.js';
+export {
+  type ProjectInfo,
+  type DetectionResult,
+  type StackType,
+  type NodeSubType,
+  type DatabaseInfo,
+  type DatabaseType,
+  type MonorepoInfo,
+  type WorkspacePackage,
+} from './types.js';

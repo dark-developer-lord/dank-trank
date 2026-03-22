@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import { detectProject } from '../detector/index.js';
 import { log } from '../utils/logger.js';
 import { withSpinner } from '../utils/spinner.js';
+import { resolveAllPlugins } from '../config/plugin.js';
 
 export async function inspectCommand(options: { path?: string }): Promise<void> {
   const rootDir = options.path || process.cwd();
@@ -9,7 +10,13 @@ export async function inspectCommand(options: { path?: string }): Promise<void> 
   log.banner();
   log.header('Inspecting project...');
 
-  const project = await withSpinner('Scanning project files', () => detectProject(rootDir));
+  // Load plugins so extra detectors can contribute
+  const { detectors: extraDetectors } = await resolveAllPlugins(rootDir);
+  if (extraDetectors.length > 0) {
+    log.dim(`Plugins: ${extraDetectors.length} extra detector(s) loaded`);
+  }
+
+  const project = await withSpinner('Scanning project files', () => detectProject(rootDir, extraDetectors));
 
   if (!project.primary) {
     log.warn('Could not detect a known stack in this project.');
@@ -50,6 +57,18 @@ export async function inspectCommand(options: { path?: string }): Promise<void> 
     log.dim('Other possible stacks detected:');
     for (const d of project.detections.slice(1)) {
       log.dim(`  ${d.stack} (${d.confidence}%)`);
+    }
+  }
+
+  // Monorepo section
+  if (project.monorepo) {
+    const { monorepo } = project;
+    log.break();
+    log.header(`Monorepo (${monorepo.type})`);
+    log.info(`${monorepo.packages.length} workspace package(s) detected:`);
+    for (const pkg of monorepo.packages) {
+      const stackLabel = pkg.stack ? chalk.dim(` → ${pkg.stack.stack} (${pkg.stack.confidence}%)`) : '';
+      log.info(`  ${chalk.bold(pkg.name)}  ${chalk.dim(pkg.path)}${stackLabel}`);
     }
   }
 

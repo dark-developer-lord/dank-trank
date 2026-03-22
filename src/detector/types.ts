@@ -17,10 +17,22 @@ export interface DetectionResult {
   databases: DatabaseInfo[];
 }
 
+export interface WorkspacePackage {
+  name: string;
+  path: string;
+  stack?: DetectionResult;
+}
+
+export interface MonorepoInfo {
+  type: 'pnpm' | 'npm' | 'lerna';
+  packages: WorkspacePackage[];
+}
+
 export interface ProjectInfo {
   rootDir: string;
   detections: DetectionResult[];
   primary: DetectionResult | null;
+  monorepo?: MonorepoInfo;
 }
 
 export interface Detector {
