@@ -1,0 +1,50 @@
+name: Deploy {{projectName}}
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  IMAGE_NAME: {{projectName}}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+{{#if usePnpm}}
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+{{/if}}
+
+      - name: Install dependencies
+        run: {{installCmd}}
+
+      - name: Run tests
+        run: {{testCmd}}
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t $IMAGE_NAME .
+
+      - name: Run container health check
+        run: |
+          docker run -d --name test-container -p {{port}}:{{port}} $IMAGE_NAME
+          sleep 5
+          docker ps | grep test-container
+          docker stop test-container

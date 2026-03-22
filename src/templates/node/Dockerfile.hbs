@@ -1,0 +1,36 @@
+# --- Build stage ---
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json {{#if usePnpm}}pnpm-lock.yaml{{/if}}{{#if useYarn}}yarn.lock{{/if}} ./
+
+# Install dependencies
+{{#if usePnpm}}RUN corepack enable && pnpm install --frozen-lockfile{{/if}}{{#if useYarn}}RUN yarn install --frozen-lockfile{{/if}}{{#if useNpm}}RUN npm ci{{/if}}
+
+# Copy source code
+COPY . .
+
+# Build if build script exists
+{{#if hasBuild}}RUN {{#if usePnpm}}pnpm{{/if}}{{#if useYarn}}yarn{{/if}}{{#if useNpm}}npm run{{/if}} build{{/if}}
+
+# --- Production stage ---
+FROM node:20-alpine
+
+# Security: run as non-root user
+RUN addgroup -S appuser && adduser -S appuser -G appuser
+
+WORKDIR /app
+
+COPY --from=builder /app .
+
+{{#if hasBuild}}# Remove dev dependencies
+{{#if usePnpm}}RUN corepack enable && pnpm prune --prod{{/if}}{{#if useYarn}}RUN yarn install --production{{/if}}{{#if useNpm}}RUN npm prune --production{{/if}}
+{{/if}}
+
+USER appuser
+
+EXPOSE {{port}}
+
+CMD [{{startCmd}}]

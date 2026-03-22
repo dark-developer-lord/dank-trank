@@ -1,0 +1,46 @@
+services:
+  web:
+    build: .
+    container_name: {{projectName}}-web
+    restart: unless-stopped
+    ports:
+      - "{{port}}:{{port}}"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: postgres:16-alpine
+    container_name: {{projectName}}-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: {{projectName}}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: {{projectName}}-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - web
+    networks:
+      - app-network
+
+volumes:
+  postgres-data:
+
+networks:
+  app-network:
+    driver: bridge

@@ -1,0 +1,85 @@
+{
+  "name": "@adas/setup-my-startup",
+  "version": "0.1.0",
+  "description": "From idea to live app in 1 command. Auto-detect your stack, generate production-ready Docker, Nginx, and CI/CD.",
+  "type": "module",
+  "bin": {
+    "setup-my-startup": "./dist/cli/index.js",
+    "sms": "./dist/cli/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "dist/templates",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "start": "node dist/cli/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src/ tests/",
+    "lint:fix": "eslint src/ tests/ --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm run build"
+  },
+  "keywords": [
+    "devops",
+    "docker",
+    "dockerfile",
+    "nginx",
+    "ci-cd",
+    "github-actions",
+    "startup",
+    "cli",
+    "scaffolding",
+    "django",
+    "fastapi",
+    "nodejs",
+    "express",
+    "nextjs",
+    "production-ready",
+    "infrastructure"
+  ],
+  "author": "Adas <adas@setup-my-startup.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adas-dev/setup-my-startup.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adas-dev/setup-my-startup/issues"
+  },
+  "homepage": "https://github.com/adas-dev/setup-my-startup#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "packageManager": "pnpm@10.30.3",
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "commander": "^14.0.3",
+    "enquirer": "^2.4.1",
+    "ora": "^9.3.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.5.0",
+    "eslint": "^10.1.0",
+    "prettier": "^3.8.1",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.57.1",
+    "vitest": "^4.1.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
