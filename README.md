@@ -73,6 +73,11 @@ dank-trank generate --dry-run
 | 💾 **Safe overwrites** | Creates `.bak` backups before overwriting |
 | 🏥 **Doctor** | Checks your environment for required tools |
 | 🎯 **Database detection** | Detects PostgreSQL, MongoDB, Redis from deps |
+| ☁️ **Deploy wizard** | Deploy to DigitalOcean, Vercel, AWS with guided prompts |
+| 🔒 **SSL/TLS automation** | Generate Nginx + certbot configs for HTTPS |
+| ☸️ **Kubernetes manifests** | Generate manifests for your stack |
+| 🧩 **Plugin system** | Add custom generators, detectors, and commands |
+| 🏢 **Monorepo support** | Detects root stack in monorepos |
 
 ---
 
@@ -99,9 +104,6 @@ dank-trank generate --dry-run
 
 ---
 
-## 🛠 Commands
-
-```bash
 dank-trank inspect              # Detect and display stack info
 dank-trank generate             # Generate infrastructure files
 dank-trank generate --dry-run   # Preview without writing
@@ -109,7 +111,28 @@ dank-trank generate --force     # Overwrite existing files (with backup)
 dank-trank init                 # Interactive setup wizard
 dank-trank deploy               # Deploy to cloud (coming soon)
 dank-trank doctor               # Check environment requirements
+## 🛠 Commands
+
+```bash
+dank-trank inspect                # Detect and display stack info
+dank-trank generate               # Generate infrastructure files
+dank-trank generate --dry-run     # Preview without writing
+dank-trank generate --force       # Overwrite existing files (with backup)
+dank-trank init                   # Interactive setup wizard
+dank-trank deploy                 # Deploy to DigitalOcean, Vercel, AWS
+dank-trank ssl                    # Generate SSL/TLS configs (Nginx, certbot)
+dank-trank kube                   # Generate Kubernetes manifests
+dank-trank doctor                 # Check environment requirements
+dank-trank plugin <cmd>           # Manage and use plugins
 ```
+
+### New in v3.0
+
+- **Deploy wizard**: `dank-trank deploy` guides you through cloud deployment (DigitalOcean, Vercel, AWS)
+- **SSL/TLS automation**: `dank-trank ssl` generates Nginx + certbot configs for HTTPS
+- **Kubernetes support**: `dank-trank kube` generates manifests for your stack
+- **Monorepo detection**: Works in monorepos, detects root stack
+- **Plugin system**: Add custom generators, detectors, and commands
 
 ---
 
@@ -186,7 +209,14 @@ Files
 
 ## 🗺 Roadmap
 
-### v2.0 (Current)
+### v3.0 (Current)
+- [x] Deploy to DigitalOcean, Vercel, AWS (deploy wizard)
+- [x] SSL/TLS automation (Nginx + certbot templates)
+- [x] Kubernetes manifests (generator)
+- [x] Monorepo support (detection, config)
+- [x] Plugin system for custom stacks
+
+### v2.0
 - [x] Auto-detect Django, FastAPI, Node.js (+ NestJS, Fastify)
 - [x] Database detection (PostgreSQL, MongoDB, Redis)
 - [x] Generate Dockerfile with health checks
@@ -196,38 +226,30 @@ Files
 - [x] GitHub Actions with GHCR push
 - [x] Summary card after generation
 
-### v3.0 (Planned)
-- [ ] Deploy to DigitalOcean, Vercel, AWS
-- [ ] SSL/TLS automation
-- [ ] Kubernetes manifests
-- [ ] Monorepo support
-- [ ] Plugin system for custom stacks
-
 ---
 
+src/
 ## 🏗 Architecture
 
 ```
-src/
+
 ├── cli/          # CLI entry point (Commander)
-├── commands/     # Command handlers (inspect, generate, init, deploy, doctor)
-├── detector/     # Stack + database detection
-├── generators/   # File generators (7 generators)
+├── commands/     # Command handlers (inspect, generate, init, deploy, ssl, kube, plugin, doctor)
+├── detector/     # Stack + database + monorepo detection
+├── generators/   # File generators (Docker, Nginx, Kube, SSL, etc.)
 ├── templates/    # Handlebars-like templates per stack
-├── providers/    # Cloud deployment providers (stubs)
+├── providers/    # Cloud deployment providers (DigitalOcean, Vercel, AWS)
 ├── renderer/     # Micro template engine (zero deps)
-├── config/       # Project configuration
+├── config/       # Project & plugin configuration
+├── plugins/      # Custom plugins (user-defined)
 └── utils/        # Logger, spinner, file operations
 ```
-
 ---
 
 ## Limitations
 
-- **Monorepos** — detects root stack only; workspace packages not individually scanned
-- **Custom frameworks** — only detects Django, FastAPI, and popular Node.js frameworks
-- **SSL/TLS** — generated Nginx configs are HTTP-only; add TLS in your reverse proxy or load balancer
-- **Deploy** — deploy command is a stub; actual deployment support is on the roadmap
+- **Monorepos** — Only root stack is detected; workspace packages are not individually scanned
+- **Custom frameworks** — Only detects Django, FastAPI, and popular Node.js frameworks
 
 ---
 
