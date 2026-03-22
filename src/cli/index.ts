@@ -1,4 +1,5 @@
 import { Command } from 'commander';
+import { createRequire } from 'node:module';
 import { inspectCommand } from '../commands/inspect.js';
 import { generateCommand } from '../commands/generate.js';
 import { initCommand } from '../commands/init.js';
@@ -6,12 +7,15 @@ import { deployCommand } from '../commands/deploy.js';
 import { doctorCommand } from '../commands/doctor.js';
 import { handleError } from '../utils/exit.js';
 
+const require = createRequire(import.meta.url);
+const { version } = require('../../package.json') as { version: string };
+
 const program = new Command();
 
 program
-  .name('setup-my-startup')
+  .name('dank-trank')
   .description('From idea to live app in 1 command. Auto-detect your stack, generate production-ready infrastructure.')
-  .version('0.1.0');
+  .version(version);
 
 program
   .command('inspect')

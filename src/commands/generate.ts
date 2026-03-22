@@ -1,9 +1,14 @@
 import chalk from 'chalk';
+import { createRequire } from 'node:module';
 import { detectProject } from '../detector/index.js';
 import { buildContext, generateAll, writeGeneratedFiles } from '../generators/index.js';
 import { log } from '../utils/logger.js';
 import { withSpinner } from '../utils/spinner.js';
 import type { WriteResult } from '../utils/fs.js';
+import type { DetectionResult } from '../detector/types.js';
+
+const require = createRequire(import.meta.url);
+const { version } = require('../../package.json') as { version: string };
 
 interface GenerateCommandOptions {
   path?: string;
@@ -35,7 +40,7 @@ function printResults(results: WriteResult[], dryRun: boolean): void {
 
   if (dryRun) {
     log.info(`Dry run complete. ${results.length} files would be generated.`);
-    log.step(`Run ${chalk.cyan('setup-my-startup generate')} (without --dry-run) to write files.`);
+    log.step(`Run ${chalk.cyan('dank-trank generate')} (without --dry-run) to write files.`);
   } else {
     const parts: string[] = [];
     if (created > 0) parts.push(`${created} created`);
@@ -43,6 +48,29 @@ function printResults(results: WriteResult[], dryRun: boolean): void {
     if (skipped > 0) parts.push(`${skipped} skipped`);
     log.success(`Done! ${parts.join(', ')}.`);
   }
+}
+
+function printSummaryCard(primary: DetectionResult, fileCount: number): void {
+  const dbNames = primary.databases.map((d) => d.type).join(', ');
+  const stackLabel = dbNames
+    ? `${primary.stack.charAt(0).toUpperCase() + primary.stack.slice(1)} + ${dbNames}`
+    : primary.stack.charAt(0).toUpperCase() + primary.stack.slice(1);
+
+  const lines = [
+    `  dank-trank v${version}`,
+    ``,
+    `  Stack:     ${stackLabel}`,
+    `  Files:     ${fileCount} generated`,
+    ``,
+    `  Next: docker compose up --build`,
+  ];
+
+  const width = 45;
+  const top = chalk.cyan('┌' + '─'.repeat(width) + '┐');
+  const bottom = chalk.cyan('└' + '─'.repeat(width) + '┘');
+  const body = lines.map((l) => chalk.cyan('│') + l.padEnd(width) + chalk.cyan('│')).join('\n');
+
+  console.log(`\n${top}\n${body}\n${bottom}\n`);
 }
 
 export async function generateCommand(options: GenerateCommandOptions): Promise<void> {
@@ -54,7 +82,7 @@ export async function generateCommand(options: GenerateCommandOptions): Promise<
 
   if (!project.primary) {
     log.error('Could not detect a known stack in this project.');
-    log.dim('Supported stacks: Django, FastAPI, Node.js (Express, Next.js, Vite)');
+    log.dim('Supported stacks: Django, FastAPI, Node.js (Express, Next.js, Vite, NestJS, Fastify)');
     log.break();
     log.info('Make sure you are running this command from your project root directory.');
     process.exitCode = 1;
@@ -85,11 +113,7 @@ export async function generateCommand(options: GenerateCommandOptions): Promise<
   printResults(results, !!options.dryRun);
 
   if (!options.dryRun) {
-    log.break();
-    log.header('Next steps');
-    log.step(`Review generated files`);
-    log.step(`Run ${chalk.cyan('docker compose up --build')} to start locally`);
-    log.step(`Push to GitHub to trigger CI/CD workflow`);
-    log.break();
+    const created = results.filter((r) => r.action === 'created' || r.action === 'overwritten').length;
+    printSummaryCard(primary, created);
   }
 }

@@ -4,33 +4,54 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy package files
-COPY package*.json {{#if usePnpm}}pnpm-lock.yaml{{/if}}{{#if useYarn}}yarn.lock{{/if}} ./
+COPY package*.json ./
+{{#if usePnpm}}COPY pnpm-lock.yaml ./{{/if}}
+{{#if useYarn}}COPY yarn.lock ./{{/if}}
 
 # Install dependencies
-{{#if usePnpm}}RUN corepack enable && pnpm install --frozen-lockfile{{/if}}{{#if useYarn}}RUN yarn install --frozen-lockfile{{/if}}{{#if useNpm}}RUN npm ci{{/if}}
+{{#if usePnpm}}RUN corepack enable && pnpm install --frozen-lockfile{{/if}}
+{{#if useYarn}}RUN yarn install --frozen-lockfile{{/if}}
+{{#if useNpm}}RUN npm ci{{/if}}
 
 # Copy source code
 COPY . .
 
 # Build if build script exists
-{{#if hasBuild}}RUN {{#if usePnpm}}pnpm{{/if}}{{#if useYarn}}yarn{{/if}}{{#if useNpm}}npm run{{/if}} build{{/if}}
+{{#if hasBuild}}
+{{#if usePnpm}}RUN corepack enable && pnpm run build{{/if}}
+{{#if useYarn}}RUN yarn build{{/if}}
+{{#if useNpm}}RUN npm run build{{/if}}
+{{/if}}
 
 # --- Production stage ---
 FROM node:20-alpine
+
+RUN apk add --no-cache curl
 
 # Security: run as non-root user
 RUN addgroup -S appuser && adduser -S appuser -G appuser
 
 WORKDIR /app
 
-COPY --from=builder /app .
+# Copy package files for production install
+COPY package*.json ./
+{{#if usePnpm}}COPY pnpm-lock.yaml ./{{/if}}
+{{#if useYarn}}COPY yarn.lock ./{{/if}}
 
-{{#if hasBuild}}# Remove dev dependencies
-{{#if usePnpm}}RUN corepack enable && pnpm prune --prod{{/if}}{{#if useYarn}}RUN yarn install --production{{/if}}{{#if useNpm}}RUN npm prune --production{{/if}}
-{{/if}}
+# Install production dependencies only
+{{#if usePnpm}}RUN corepack enable && pnpm install --frozen-lockfile --prod{{/if}}
+{{#if useYarn}}RUN yarn install --frozen-lockfile --production{{/if}}
+{{#if useNpm}}RUN npm ci --omit=dev{{/if}}
+
+# Copy built app from builder
+{{#if hasBuild}}COPY --from=builder /app/dist ./dist{{/if}}
+{{#unless hasBuild}}COPY --from=builder /app .{{/unless}}
 
 USER appuser
 
 EXPOSE {{port}}
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:{{port}}/ || exit 1
 
 CMD [{{startCmd}}]

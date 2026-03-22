@@ -29,7 +29,7 @@ export const log = {
   },
   banner: () => {
     console.log();
-    console.log(chalk.bold.cyan('  ⚡ Setup My Startup'));
+    console.log(chalk.bold.cyan('  ⚡ dank-trank'));
     console.log(chalk.dim('  From idea to live app in 1 command'));
     console.log();
   },

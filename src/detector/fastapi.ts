@@ -58,6 +58,7 @@ export const fastapiDetector: Detector = {
       stack: 'fastapi',
       confidence: Math.min(confidence, 100),
       details,
+      databases: [],
     };
   },
 };

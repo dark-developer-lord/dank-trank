@@ -2,6 +2,7 @@ import type { ProjectInfo, Detector } from './types.js';
 import { djangoDetector } from './django.js';
 import { fastapiDetector } from './fastapi.js';
 import { nodeDetector } from './node.js';
+import { detectDatabases } from './database.js';
 
 const detectors: Detector[] = [djangoDetector, fastapiDetector, nodeDetector];
 
@@ -15,6 +16,13 @@ export async function detectProject(rootDir: string): Promise<ProjectInfo> {
   // Sort by confidence descending
   detections.sort((a, b) => b.confidence - a.confidence);
 
+  // Run database detection for each detected stack
+  await Promise.all(
+    detections.map(async (detection) => {
+      detection.databases = await detectDatabases(rootDir, detection.stack);
+    }),
+  );
+
   return {
     rootDir,
     detections,
@@ -22,4 +30,4 @@ export async function detectProject(rootDir: string): Promise<ProjectInfo> {
   };
 }
 
-export { type ProjectInfo, type DetectionResult, type StackType, type NodeSubType } from './types.js';
+export { type ProjectInfo, type DetectionResult, type StackType, type NodeSubType, type DatabaseInfo, type DatabaseType } from './types.js';

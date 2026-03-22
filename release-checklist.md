@@ -1,4 +1,4 @@
-# Release Checklist — v0.1.0
+# Release Checklist — v2.0.0
 
 ## Pre-Release
 
@@ -13,20 +13,20 @@
 - [ ] test `generate --force` creates backups
 - [ ] test `doctor` shows correct status
 - [ ] README is up to date
-- [ ] CHANGELOG has 0.1.0 entry
-- [ ] Version in package.json is 0.1.0
+- [ ] CHANGELOG has 2.0.0 entry
+- [ ] Version in package.json is 2.0.0
 
 ## Publish
 
-- [ ] `git init && git add -A && git commit -m "feat: initial MVP release v0.1.0"`
+- [ ] `git add -A && git commit -m "feat: v2.0.0 production-ready overhaul"`
 - [ ] Create GitHub repository
 - [ ] `git remote add origin <repo-url>`
 - [ ] `git push -u origin main`
 - [ ] Verify CI passes on GitHub
 - [ ] `npm login` (or `pnpm login`)
 - [ ] `pnpm publish --access public`
-- [ ] Verify `npx @adas/setup-my-startup --help` works
-- [ ] Create GitHub Release with tag `v0.1.0`
+- [ ] Verify `npx @adas/dank-trank --help` works
+- [ ] Create GitHub Release with tag `v2.0.0`
 
 ## Post-Release
 

@@ -1,6 +1,6 @@
 # Adding a New Stack
 
-This guide walks you through adding support for a new framework/stack to Setup My Startup.
+This guide walks you through adding support for a new framework/stack to dank-trank.
 
 ## Overview
 

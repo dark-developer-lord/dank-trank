@@ -7,7 +7,7 @@ export async function initCommand(options: { path?: string; force?: boolean }): 
   const rootDir = options.path || process.cwd();
 
   log.banner();
-  log.header('Welcome to Setup My Startup!');
+  log.header('Welcome to dank-trank!');
   log.info("Let's get your project production-ready.\n");
 
   // Step 1: Inspect

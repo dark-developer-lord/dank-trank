@@ -1,11 +1,11 @@
 {
-  "name": "@adas/setup-my-startup",
-  "version": "0.1.0",
+  "name": "@adas/dank-trank",
+  "version": "2.0.0",
   "description": "From idea to live app in 1 command. Auto-detect your stack, generate production-ready Docker, Nginx, and CI/CD.",
   "type": "module",
   "bin": {
-    "setup-my-startup": "./dist/cli/index.js",
-    "sms": "./dist/cli/index.js"
+    "dank-trank": "./dist/cli/index.js",
+    "dt": "./dist/cli/index.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -47,16 +47,16 @@
     "production-ready",
     "infrastructure"
   ],
-  "author": "Adas <adas@setup-my-startup.dev>",
+  "author": "Adas <adas@dank-trank.dev>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/adas-dev/setup-my-startup.git"
+    "url": "https://github.com/dark-developer-lord/dank-trank.git"
   },
   "bugs": {
-    "url": "https://github.com/adas-dev/setup-my-startup/issues"
+    "url": "https://github.com/dark-developer-lord/dank-trank/issues"
   },
-  "homepage": "https://github.com/adas-dev/setup-my-startup#readme",
+  "homepage": "https://github.com/dark-developer-lord/dank-trank#readme",
   "engines": {
     "node": ">=18.0.0"
   },

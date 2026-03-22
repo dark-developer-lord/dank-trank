@@ -27,6 +27,6 @@ export async function deployCommand(options: { provider?: string; path?: string 
 
   log.break();
   log.dim('Follow the project roadmap for updates:');
-  log.dim('https://github.com/adas-dev/setup-my-startup#roadmap');
+  log.dim('https://github.com/dark-developer-lord/dank-trank#roadmap');
   log.break();
 }

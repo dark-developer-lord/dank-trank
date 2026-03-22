@@ -21,5 +21,5 @@ export interface GenerateOptions {
 
 export interface Generator {
   name: string;
-  generate(ctx: GeneratorContext): Promise<GeneratedFile>;
+  generate(ctx: GeneratorContext): Promise<GeneratedFile | null>;
 }

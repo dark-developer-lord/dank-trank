@@ -34,6 +34,14 @@ export const nodeDetector: Detector = {
       nodeSubType = 'nextjs';
       confidence += 30;
       details['framework'] = 'Next.js';
+    } else if ('@nestjs/core' in allDeps) {
+      nodeSubType = 'nestjs';
+      confidence += 30;
+      details['framework'] = 'NestJS';
+    } else if ('fastify' in allDeps) {
+      nodeSubType = 'fastify';
+      confidence += 30;
+      details['framework'] = 'Fastify';
     } else if ('express' in allDeps) {
       nodeSubType = 'express';
       confidence += 30;
@@ -81,6 +89,7 @@ export const nodeDetector: Detector = {
       confidence: Math.min(confidence, 100),
       details,
       nodeSubType,
+      databases: [],
     };
   },
 };

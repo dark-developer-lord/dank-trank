@@ -8,6 +8,7 @@ on:
 
 env:
   IMAGE_NAME: {{projectName}}
+  REGISTRY: ghcr.io
 
 jobs:
   test:
@@ -41,6 +42,25 @@ jobs:
       - name: Run container health check
         run: |
           docker run -d --name test-container -p {{port}}:{{port}} $IMAGE_NAME
-          sleep 5
-          curl -f http://localhost:{{port}}/docs || exit 1
-          docker stop test-container
+          for i in $(seq 1 10); do
+            if curl -sf http://localhost:{{port}}/docs > /dev/null 2>&1; then
+              echo "Health check passed on attempt $i"
+              exit 0
+            fi
+            echo "Attempt $i failed, retrying in 3s..."
+            sleep 3
+          done
+          echo "Health check failed after 10 attempts"
+          docker logs test-container
+          exit 1
+
+      - name: Push to GHCR
+        if: github.event_name == 'push'
+        run: |
+          echo "${{"{{"}} secrets.GITHUB_TOKEN {{"}}"}}" | docker login $REGISTRY -u ${{"{{"}} github.actor {{"}}"}} --password-stdin
+          docker tag $IMAGE_NAME $REGISTRY/${{"{{"}} github.repository_owner {{"}}"}}/$IMAGE_NAME:latest
+          docker push $REGISTRY/${{"{{"}} github.repository_owner {{"}}"}}/$IMAGE_NAME:latest
+
+      - name: Cleanup
+        if: always()
+        run: docker stop test-container 2>/dev/null && docker rm test-container 2>/dev/null || true

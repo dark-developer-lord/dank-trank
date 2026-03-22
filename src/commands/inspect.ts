@@ -13,7 +13,7 @@ export async function inspectCommand(options: { path?: string }): Promise<void> 
 
   if (!project.primary) {
     log.warn('Could not detect a known stack in this project.');
-    log.dim('Supported stacks: Django, FastAPI, Node.js (Express, Next.js, Vite)');
+    log.dim('Supported stacks: Django, FastAPI, Node.js (Express, Next.js, Vite, NestJS, Fastify)');
     log.break();
     log.info('Make sure you are running this command from your project root directory.');
     return;
@@ -35,6 +35,10 @@ export async function inspectCommand(options: { path?: string }): Promise<void> 
     rows.push(['Framework', primary.nodeSubType]);
   }
 
+  if (primary.databases.length > 0) {
+    rows.push(['Databases', primary.databases.map((d) => d.type).join(', ')]);
+  }
+
   for (const [key, value] of Object.entries(primary.details)) {
     rows.push([key, value]);
   }
@@ -50,6 +54,6 @@ export async function inspectCommand(options: { path?: string }): Promise<void> 
   }
 
   log.break();
-  log.step(`Next: run ${chalk.cyan('setup-my-startup generate')} to create infrastructure files`);
+  log.step(`Next: run ${chalk.cyan('dank-trank generate')} to create infrastructure files`);
   log.break();
 }

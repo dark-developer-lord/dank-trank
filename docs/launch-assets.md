@@ -3,54 +3,55 @@
 ## X (Twitter)
 
 ```
-🚀 Just shipped Setup My Startup — an open-source CLI that turns your project into production-ready infra in 1 command.
+🚀 Just shipped dank-trank — an open-source CLI that turns your project into production-ready infra in 1 command.
 
 Auto-detects your stack (Django, FastAPI, Node.js) → generates Dockerfile, docker-compose, Nginx, CI/CD.
 
-npx @adas/setup-my-startup generate
+npx @adas/dank-trank generate
 
-⭐ github.com/adas-dev/setup-my-startup
+⭐ github.com/dark-developer-lord/dank-trank
 ```
 
 ## LinkedIn
 
 ```
-Excited to open-source Setup My Startup — a CLI tool that bridges the gap between "it works on my machine" and production.
+Excited to open-source dank-trank — a CLI tool that bridges the gap between "it works on my machine" and production.
 
 Point it at any Django, FastAPI, or Node.js project → get production-ready Docker, Nginx, CI/CD in seconds. One command. Zero config.
 
-Built for startups who want to ship fast without hiring a DevOps engineer on day one.
+Built for devs who want to ship fast without hiring a DevOps engineer on day one.
 
-🔗 github.com/adas-dev/setup-my-startup
+🔗 github.com/dark-developer-lord/dank-trank
 
 #devops #opensource #docker #startup #cli
 ```
 
 ## Reddit / Hacker News
 
-**Title:** Show HN: Setup My Startup – From idea to live app in 1 command
+**Title:** Show HN: dank-trank – From idea to live app in 1 command
 
 ```
 I built an open-source CLI that auto-detects your project stack and generates production-ready infrastructure:
 
-- Dockerfile (multi-stage, non-root user)
-- docker-compose.yml (with Nginx + database)
-- nginx.conf (reverse proxy)
+- Dockerfile (multi-stage, non-root user, health check)
+- docker-compose.yml (with Nginx + database + health checks)
+- nginx.conf (reverse proxy + security headers)
 - GitHub Actions CI/CD
+- .dockerignore, .env.example, entrypoint scripts
 
-Supports Django, FastAPI, and Node.js (Express, Next.js, Vite).
+Supports Django, FastAPI, and Node.js (Express, Next.js, Vite, NestJS, Fastify).
 
 Usage:
-  npx @adas/setup-my-startup generate
+  npx @adas/dank-trank generate
 
 Preview first:
-  npx @adas/setup-my-startup generate --dry-run
+  npx @adas/dank-trank generate --dry-run
 
 No config needed. It scans your project files and figures out the rest.
 
 MIT licensed. Contributions welcome.
 
-GitHub: github.com/adas-dev/setup-my-startup
+GitHub: github.com/dark-developer-lord/dank-trank
 ```
 
 ## One-liner for README / Bio

@@ -122,3 +122,40 @@ export const githubActionsGenerator: Generator = {
     };
   },
 };
+
+export const dockerignoreGenerator: Generator = {
+  name: '.dockerignore',
+  async generate(ctx: GeneratorContext): Promise<GeneratedFile> {
+    const template = await loadTemplate(ctx.stack.stack, 'dockerignore.hbs');
+    return {
+      relativePath: '.dockerignore',
+      content: render(template, ctx as unknown as Record<string, unknown>),
+      description: 'Docker ignore file for optimized builds',
+    };
+  },
+};
+
+export const envExampleGenerator: Generator = {
+  name: '.env.example',
+  async generate(ctx: GeneratorContext): Promise<GeneratedFile> {
+    const template = await loadTemplate(ctx.stack.stack, 'env.example.hbs');
+    return {
+      relativePath: '.env.example',
+      content: render(template, ctx as unknown as Record<string, unknown>),
+      description: 'Environment variables template with all required variables',
+    };
+  },
+};
+
+export const entrypointGenerator: Generator = {
+  name: 'docker-entrypoint.sh',
+  async generate(ctx: GeneratorContext): Promise<GeneratedFile | null> {
+    if (ctx.stack.stack !== 'django') return null;
+    const template = await loadTemplate(ctx.stack.stack, 'docker-entrypoint.sh.hbs');
+    return {
+      relativePath: 'docker-entrypoint.sh',
+      content: render(template, ctx as unknown as Record<string, unknown>),
+      description: 'Docker entrypoint script (auto-migrate + collectstatic)',
+    };
+  },
+};

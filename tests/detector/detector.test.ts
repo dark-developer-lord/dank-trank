@@ -41,6 +41,32 @@ describe('Node.js detector', () => {
     expect(result.primary!.nodeSubType).toBe('express');
     expect(result.primary!.details['framework']).toBe('Express');
   });
+
+  it('detects NestJS sub-framework', async () => {
+    const result = await detectProject(join(FIXTURES, 'nestjs-project'));
+    expect(result.primary).not.toBeNull();
+    expect(result.primary!.stack).toBe('node');
+    expect(result.primary!.nodeSubType).toBe('nestjs');
+    expect(result.primary!.details['framework']).toBe('NestJS');
+  });
+});
+
+describe('Database detection integration', () => {
+  it('detects PostgreSQL in Django fixture (psycopg2-binary)', async () => {
+    const result = await detectProject(join(FIXTURES, 'django-project'));
+    expect(result.primary).not.toBeNull();
+    expect(result.primary!.databases).toContainEqual(expect.objectContaining({ type: 'postgres' }));
+  });
+
+  it('returns empty databases for Node Express fixture', async () => {
+    const result = await detectProject(join(FIXTURES, 'node-project'));
+    expect(result.primary!.databases).toHaveLength(0);
+  });
+
+  it('returns empty databases for FastAPI fixture', async () => {
+    const result = await detectProject(join(FIXTURES, 'fastapi-project'));
+    expect(result.primary!.databases).toHaveLength(0);
+  });
 });
 
 describe('Empty directory', () => {

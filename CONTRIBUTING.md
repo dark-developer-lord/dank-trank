@@ -1,4 +1,4 @@
-# Contributing to Setup My Startup
+# Contributing to dank-trank
 
 Thank you for your interest in contributing! Here's how to get started.
 
@@ -6,8 +6,8 @@ Thank you for your interest in contributing! Here's how to get started.
 
 ```bash
 # Clone the repo
-git clone https://github.com/adas-dev/setup-my-startup.git
-cd setup-my-startup
+git clone https://github.com/dark-developer-lord/dank-trank.git
+cd dank-trank
 
 # Install dependencies
 pnpm install
@@ -64,7 +64,7 @@ See [docs/adding-a-stack.md](docs/adding-a-stack.md) for a step-by-step guide.
 
 ## Reporting Bugs
 
-Open an [issue](https://github.com/adas-dev/setup-my-startup/issues) with:
+Open an [issue](https://github.com/dark-developer-lord/dank-trank/issues) with:
 - Your Node.js version (`node --version`)
 - Your OS
 - Steps to reproduce

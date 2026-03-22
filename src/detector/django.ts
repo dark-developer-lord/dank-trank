@@ -57,6 +57,7 @@ export const djangoDetector: Detector = {
       stack: 'django',
       confidence: Math.min(confidence, 100),
       details,
+      databases: [],
     };
   },
 };

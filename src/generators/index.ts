@@ -6,6 +6,9 @@ import {
   dockerComposeGenerator,
   nginxGenerator,
   githubActionsGenerator,
+  dockerignoreGenerator,
+  envExampleGenerator,
+  entrypointGenerator,
 } from './dockerfile.js';
 import { safeWriteFile, type WriteResult } from '../utils/fs.js';
 
@@ -14,6 +17,9 @@ const allGenerators = [
   dockerComposeGenerator,
   nginxGenerator,
   githubActionsGenerator,
+  dockerignoreGenerator,
+  envExampleGenerator,
+  entrypointGenerator,
 ];
 
 function getDefaultPort(stack: string): number {
@@ -35,7 +41,8 @@ export function buildContext(rootDir: string, stack: import('../detector/types.j
 }
 
 export async function generateAll(ctx: GeneratorContext): Promise<GeneratedFile[]> {
-  return Promise.all(allGenerators.map((g) => g.generate(ctx)));
+  const results = await Promise.all(allGenerators.map((g) => g.generate(ctx)));
+  return results.filter((f): f is GeneratedFile => f !== null);
 }
 
 export async function writeGeneratedFiles(

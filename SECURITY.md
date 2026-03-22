@@ -4,14 +4,14 @@
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.1.x   | :white_check_mark: |
+| 2.0.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
 If you discover a security vulnerability, please report it responsibly:
 
 1. **Do NOT open a public issue.**
-2. Email us at: **security@setup-my-startup.dev**
+2. Email us at: **security@dank-trank.dev**
 3. Include a description of the vulnerability and steps to reproduce.
 4. We will acknowledge within 48 hours and provide a fix timeline.
 
